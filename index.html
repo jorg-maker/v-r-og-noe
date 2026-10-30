@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="no">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101b2c">
+    <title>Vær akkurat nå</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <main class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="Vær akkurat nå, hjem">
+          <span class="brand-mark" aria-hidden="true">☼</span>
+          <span>vær<span class="brand-light"> akkurat nå</span></span>
+        </a>
+        <span class="source-label"><span class="live-dot"></span> Prognose fra Yr</span>
+      </header>
+
+      <section class="intro">
+        <p class="eyebrow">VÆRET DER DU ER</p>
+        <h1>Ut på tur,<br><span>uansett vær.</span></h1>
+        <p class="intro-copy">Søk etter et sted og få oppdatert værvarsel fra Yr.</p>
+      </section>
+
+      <section class="search-panel" aria-label="Finn værvarsel">
+        <form id="search-form" class="search-form">
+          <label class="sr-only" for="place-input">Søk etter sted</label>
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="place-input" type="search" placeholder="Søk etter by eller sted…" autocomplete="off" required>
+          <button class="location-button" id="location-button" type="button" aria-label="Bruk min posisjon" title="Bruk min posisjon">◎</button>
+          <button class="search-button" type="submit">Finn været <span aria-hidden="true">→</span></button>
+        </form>
+        <div id="search-results" class="search-results" role="listbox" aria-label="Søkeresultater" hidden></div>
+      </section>
+
+      <p id="status" class="status" role="status" aria-live="polite">Laster værvarsel for Oslo…</p>
+
+      <section id="weather" class="weather-content" aria-live="polite" hidden>
+        <div class="current-card">
+          <div class="current-main">
+            <p class="eyebrow current-eyebrow">AKKURAT NÅ</p>
+            <h2 id="place-name" class="place-name"></h2>
+            <p id="updated-at" class="updated-at"></p>
+            <div class="temperature-line">
+              <span id="current-icon" class="weather-icon" aria-hidden="true"></span>
+              <span id="temperature" class="temperature"></span><span class="degrees">°</span>
+            </div>
+            <p id="condition" class="condition"></p>
+          </div>
+          <div class="current-details">
+            <div class="detail">
+              <span class="detail-icon" aria-hidden="true">↗</span>
+              <span><small>Vind</small><strong id="wind"></strong></span>
+            </div>
+            <div class="detail">
+              <span class="detail-icon drop-icon" aria-hidden="true">◉</span>
+              <span><small>Luftfuktighet</small><strong id="humidity"></strong></span>
+            </div>
+            <div class="detail">
+              <span class="detail-icon drop-icon" aria-hidden="true">⌄</span>
+              <span><small>Nedbør neste time</small><strong id="precipitation"></strong></span>
+            </div>
+          </div>
+        </div>
+
+        <section class="forecast-section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">PLANLEGG DAGENE</p>
+              <h2>De neste dagene</h2>
+            </div>
+            <span class="forecast-note">Daglig værvarsel</span>
+          </div>
+          <div id="forecast" class="forecast-grid"></div>
+        </section>
+      </section>
+
+      <footer class="footer">
+        <span>Værdata levert av <a href="https://www.yr.no/" target="_blank" rel="noreferrer">Yr</a> / MET Norway.</span>
+        <span>Prognoser kan endre seg.</span>
+      </footer>
+    </main>
+  </body>
+</html>
