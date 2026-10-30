@@ -4,6 +4,8 @@ const searchResults = document.querySelector("#search-results");
 const locationButton = document.querySelector("#location-button");
 const statusMessage = document.querySelector("#status");
 const weatherContent = document.querySelector("#weather");
+const GEOCODING_API = "https://geocoding-api.open-meteo.com/v1/search";
+const WEATHER_API = "https://api.met.no/weatherapi/locationforecast/2.0/compact";
 
 const weatherDescriptions = {
   clearsky: ["Klart", "☀️"],
@@ -49,11 +51,40 @@ function setStatus(message, isError = false) {
 
 async function getJson(url) {
   const response = await fetch(url);
-  const data = await response.json();
+  const body = await response.text();
+  let data;
+  try {
+    data = JSON.parse(body);
+  } catch {
+    const preview = body.slice(0, 160).replace(/\s+/g, " ").trim();
+    throw new Error(
+      `API-et svarte ikke med JSON (HTTP ${response.status}). Svar: ${preview || "tomt svar"}`,
+    );
+  }
   if (!response.ok) {
     throw new Error(data.error || "Noe gikk galt. Prøv igjen.");
   }
   return data;
+}
+
+function geocodingUrl(query) {
+  const url = new URL(GEOCODING_API);
+  url.search = new URLSearchParams({
+    name: query,
+    count: "6",
+    language: "no",
+    format: "json",
+  });
+  return url;
+}
+
+function weatherUrl(latitude, longitude) {
+  const url = new URL(WEATHER_API);
+  url.search = new URLSearchParams({
+    lat: latitude,
+    lon: longitude,
+  });
+  return url;
 }
 
 function conditionFor(symbol) {
@@ -135,9 +166,7 @@ async function loadWeather(place) {
   weatherContent.hidden = true;
   setStatus(`Henter værvarsel for ${place.name}…`);
   try {
-    const data = await getJson(
-      `/api/weather?lat=${encodeURIComponent(place.latitude)}&lon=${encodeURIComponent(place.longitude)}`,
-    );
+    const data = await getJson(weatherUrl(place.latitude, place.longitude));
     const now = data.properties.timeseries[0];
     if (!now) {
       throw new Error("Yr hadde ingen værdata for dette stedet.");
@@ -171,13 +200,14 @@ async function searchPlaces(query) {
   setStatus("Søker etter sted…");
   searchResults.hidden = true;
   try {
-    const data = await getJson(`/api/search?q=${encodeURIComponent(query)}`);
-    if (data.results.length === 0) {
+    const data = await getJson(geocodingUrl(query));
+    const places = data.results || [];
+    if (places.length === 0) {
       setStatus("Fant ingen steder. Prøv et annet søk.", true);
       return;
     }
     searchResults.replaceChildren(
-      ...data.results.map((place) => {
+      ...places.map((place) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "result-option";
